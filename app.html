@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOKSETU | AI-Powered Civic Intelligence</title>
+    <style>
+        :root {
+            --bg-dark: #050505;
+            --card-bg: rgba(20, 20, 30, 0.7);
+            --accent-purple: #8a2be2;
+            --accent-glow: #bc13fe;
+            --text-main: #e0e0e0;
+            --text-dim: #a0a0a0;
+            --success: #00ff88;
+            --warning: #f1c40f;
+            --danger: #ff4757;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at top right, #1a0b2e, #050505);
+            background-attachment: fixed;
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Layout Containers */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        section {
+            margin-bottom: 60px;
+            padding-top: 40px;
+        }
+
+        /* Components */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+            transition: transform 0.3s ease;
+        }
+
+        h1, h2, h3 {
+            color: #fff;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .glow-text {
+            text-shadow: 0 0 10px var(--accent-glow);
+            color: var(--accent-glow);
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #fff, var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-dim);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Grid Layouts */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px;
+            border-radius: 8px;
+            color: white;
+            outline: none;
+        }
+
+        input:focus { border-color: var(--accent-purple); }
+
+        .btn {
+            background: linear-gradient(45deg, var(--accent-purple), var(--accent-glow));
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+
+        .btn:hover {
+            box-shadow: 0 0 20px var(--accent-glow);
+            transform: translateY(-2px);
+        }
+
+        /* AI Analysis Panel Styles */
+        #ai-output {
+            display: none;
+            border-left: 4px solid var(--accent-glow);
+            animation: fadeIn 0.5s ease;
+        }
+
+        .analysis-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        th {
+            text-align: left;
+            padding: 15px;
+            border-bottom: 2px solid var(--accent-purple);
+            color: var(--text-dim);
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        /* Ward Health Score Bars */
+        .health-bar-container {
+            margin-bottom: 15px;
+        }
+        .bar-bg {
+            height: 10px;
+            background: #222;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+        .bar-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 1s ease-in-out;
+        }
+
+        /* Status colors */
+        .status-Pending { color: var(--warning); }
+        .status-In-Progress { color: var(--accent-glow); }
+        .status-Resolved { color: var(--success); }
+
+        .prio-High { background: rgba(255, 71, 87, 0.2); color: var(--danger); }
+        .prio-Medium { background: rgba(241, 196, 15, 0.2); color: var(--warning); }
+        .prio-Low { background: rgba(0, 255, 136, 0.2); color: var(--success); }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .insight-card {
+            border-left: 3px solid var(--accent-purple);
+            padding: 10px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <section class="hero">
+            <h1>LOKSETU</h1>
+            <p class="glow-text">AI-Powered Civic Intelligence Platform</p>
+            <p style="margin-top:15px">Bridging the gap between citizens and smart governance through real-time AI analysis and automated resolution tracking.</p>
+        </section>
+
+        <div class="dashboard-grid">
+            <section class="glass-card">
+                <h2>Submit Complaint</h2>
+                <form id="complaintForm">
+                    <div class="form-group">
+                        <label>Citizen Name</label>
+                        <input type="text" id="citizenName" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Ward / Location</label>
+                        <select id="wardLocation">
+                            <option>Ward A - Central District</option>
+                            <option>Ward B - Industrial Zone</option>
+                            <option>Ward C - Residential Hub</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Complaint Category</label>
+                        <select id="category">
+                            <option value="Road Infrastructure">Road Infrastructure (Potholes, Damage)</option>
+                            <option value="Sanitation">Sanitation & Garbage</option>
+                            <option value="Utilities">Utilities (Water, Streetlights)</option>
+                            <option value="Public Safety">Public Safety</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Complaint Description</label>
+                        <textarea id="description" rows="4" placeholder="Describe the issue in detail... (e.g., 'Huge pothole near main gate')" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Upload Image Evidence</label>
+                        <input type="file" disabled>
+                        <small style="color: var(--text-dim)">(Mock Input - System will auto-scan visuals)</small>
+                    </div>
+                    <button type="submit" class="btn">Analyze & Submit</button>
+                </form>
+            </section>
+
+            <aside>
+                <div class="glass-card" id="ai-output">
+                    <h3 class="glow-text">AI Analysis Engine</h3>
+                    <p id="scanning-text" style="font-size: 0.8rem; margin-bottom:10px; color: var(--success)">● Processing Neural Link...</p>
+                    <div class="analysis-item">
+                        <span>Complaint ID:</span>
+                        <b id="res-id">--</b>
+                    </div>
+                    <div class="analysis-item">
+                        <span>Category:</span>
+                        <b id="res-cat">--</b>
+                    </div>
+                    <div class="analysis-item">
+                        <span>Sentiment:</span>
+                        <b id="res-sent">--</b>
+                    </div>
+                    <div class="analysis-item">
+                        <span>Priority:</span>
+                        <b id="res-prio">--</b>
+                    </div>
+                    <div class="analysis-item">
+                        <span>Assigned Dept:</span>
+                        <b id="res-dept">--</b>
+                    </div>
+                </div>
+
+                <div class="glass-card" style="margin-top: 20px;">
+                    <h3>Civic Health Scores</h3>
+                    <div class="health-bar-container">
+                        <div style="display:flex; justify-content:space-between"><span>Ward A</span> <span>82%</span></div>
+                        <div class="bar-bg"><div class="bar-fill" style="width: 82%; background: var(--success);"></div></div>
+                    </div>
+                    <div class="health-bar-container">
+                        <div style="display:flex; justify-content:space-between"><span>Ward B</span> <span>61%</span></div>
+                        <div class="bar-bg"><div class="bar-fill" style="width: 61%; background: var(--warning);"></div></div>
+                    </div>
+                    <div class="health-bar-container">
+                        <div style="display:flex; justify-content:space-between"><span>Ward C</span> <span>40%</span></div>
+                        <div class="bar-bg"><div class="bar-fill" style="width: 40%; background: var(--danger);"></div></div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <section class="glass-card" style="text-align: center;">
+            <h2>Track Complaint Status</h2>
+            <div style="display: flex; gap: 10px; max-width: 500px; margin: 20px auto;">
+                <input type="text" id="trackId" placeholder="Enter Complaint ID (e.g., LOK-1234)">
+                <button class="btn" onclick="trackComplaint()">Track</button>
+            </div>
+            <p id="trackResult" style="margin-top: 10px;"></p>
+        </section>
+
+        <section class="glass-card">
+            <h2>Admin Control Panel</h2>
+            <div class="table-container">
+                <table id="complaintTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Citizen</th>
+                            <th>Ward</th>
+                            <th>Category</th>
+                            <th>Priority</th>
+                            <th>Dept</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminTableBody">
+                        <tr>
+                            <td>LOK-9921</td>
+                            <td>Rahul Sharma</td>
+                            <td>Ward B</td>
+                            <td>Sanitation</td>
+                            <td><span class="badge prio-High">High</span></td>
+                            <td>Municipal Corp.</td>
+                            <td class="status-Pending">Pending</td>
+                            <td><button onclick="updateStatus(this)" class="btn" style="padding:5px 10px; font-size:0.7rem">Progress</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="glow-text">Civic AI Insights</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
+                <div class="glass-card insight-card">
+                    <b>Anomalous Pattern Detected:</b>
+                    <p>High sanitation complaints detected in Ward B within the last 24 hours. Suggesting emergency dispatch.</p>
+                </div>
+                <div class="glass-card insight-card">
+                    <b>Infrastructure Warning:</b>
+                    <p>Road infrastructure complaints rising in Ward C. Predictive model suggests 80% chance of further damage due to upcoming rain.</p>
+                </div>
+                <div class="glass-card insight-card">
+                    <b>Sentiment Alert:</b>
+                    <p>Public sentiment negative in Ward A regarding water supply delays. Recommend immediate public notice.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const complaints = [];
+
+        // Department Mapping
+        const deptMap = {
+            "Road Infrastructure": "Public Works Dept (PWD)",
+            "Sanitation": "Municipal Health Dept",
+            "Utilities": "Water & Power Board",
+            "Public Safety": "City Police / Admin"
+        };
+
+        document.getElementById('complaintForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Inputs
+            const name = document.getElementById('citizenName').value;
+            const ward = document.getElementById('wardLocation').value;
+            const cat = document.getElementById('category').value;
+            const desc = document.getElementById('description').value;
+
+            // Simulate AI Analysis logic
+            const id = 'LOK-' + Math.floor(1000 + Math.random() * 9000);
+            
+            // Simple sentiment/priority detection based on keywords
+            let priority = "Medium";
+            let sentiment = "Neutral";
+            const urgentKeywords = ['urgent', 'dangerous', 'broken', 'accident', 'huge', 'badly'];
+            
+            if (urgentKeywords.some(word => desc.toLowerCase().includes(word))) {
+                priority = "High";
+                sentiment = "Negative";
+            } else if (desc.length > 50) {
+                sentiment = "Negative";
+            }
+
+            // Display AI Panel
+            document.getElementById('ai-output').style.display = 'block';
+            document.getElementById('res-id').innerText = id;
+            document.getElementById('res-cat').innerText = cat;
+            document.getElementById('res-sent').innerText = sentiment;
+            document.getElementById('res-prio').innerText = priority;
+            document.getElementById('res-dept').innerText = deptMap[cat];
+
+            // Add to Data Store
+            const newComplaint = {
+                id, name, ward, cat, priority, sentiment, 
+                dept: deptMap[cat], 
+                status: 'Pending'
+            };
+            complaints.push(newComplaint);
+
+            // Update Admin Table
+            addToAdminTable(newComplaint);
+
+            // Reset Form
+            this.reset();
+        });
+
+        function addToAdminTable(c) {
+            const tbody = document.getElementById('adminTableBody');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${c.id}</td>
+                <td>${c.name}</td>
+                <td>${c.ward}</td>
+                <td>${c.cat}</td>
+                <td><span class="badge prio-${c.priority}">${c.priority}</span></td>
+                <td>${c.dept}</td>
+                <td class="status-${c.status}">${c.status}</td>
+                <td><button onclick="updateStatus(this, '${c.id}')" class="btn" style="padding:5px 10px; font-size:0.7rem">Advance</button></td>
+            `;
+            tbody.prepend(row);
+        }
+
+        function updateStatus(btn, id) {
+            const row = btn.closest('tr');
+            const statusCell = row.cells[6];
+            
+            if (statusCell.innerText === 'Pending') {
+                statusCell.innerText = 'In-Progress';
+                statusCell.className = 'status-In-Progress';
+                btn.innerText = 'Resolve';
+            } else if (statusCell.innerText === 'In-Progress') {
+                statusCell.innerText = 'Resolved';
+                statusCell.className = 'status-Resolved';
+                btn.style.display = 'none';
+            }
+
+            // Sync with internal array
+            const obj = complaints.find(comp => comp.id === id);
+            if(obj) obj.status = statusCell.innerText;
+        }
+
+        function trackComplaint() {
+            const id = document.getElementById('trackId').value.toUpperCase();
+            const result = document.getElementById('trackResult');
+            const found = complaints.find(c => c.id === id);
+
+            if (found) {
+                result.innerHTML = `Status for <b>${id}</b>: <span class="status-${found.status}">${found.status}</span><br>Dept: ${found.dept}`;
+            } else {
+                result.innerHTML = `<span style="color:var(--danger)">Complaint ID not found.</span>`;
+            }
+        }
+    </script>
+</body>
+</html>
